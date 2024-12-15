@@ -1,46 +1,54 @@
 const socket = io();
 
-// Extract the entire path (excluding leading '/')
-let roomId = window.location.pathname.slice(1);
-// Default room if none provided
-if (!roomId) {
-  roomId = 'default-room';
-}
+let applyingRemoteChange = false;
 
-// Join the specific room
+// Extract the roomId from the URL path
+let roomId = window.location.pathname.slice(1);
+if (!roomId) roomId = 'default-room';
+
+// Join the room
 socket.emit('joinRoom', roomId);
 
 // Initialize CodeMirror editor
 const editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
-    lineNumbers: true,
-    mode: 'javascript',
-    theme: 'material'
-  });  
+  lineNumbers: true,
+  mode: 'javascript',
+  theme: 'material',
+  lineWrapping: false // Default wrap is OFF
+});
 
-let applyingRemoteChange = false;
-
+// Handle local changes and send them to the server
 editor.on('change', () => {
   if (applyingRemoteChange) return;
-  
+
   const fullText = editor.getValue();
-  // Emit full text to the server
   socket.emit('codeChange', { roomId, fullText });
 });
 
-// On receiving initial text for the room
+// When receiving initial text for the room
 socket.on('initText', (roomText) => {
   applyingRemoteChange = true;
   editor.setValue(roomText);
   applyingRemoteChange = false;
 });
 
-// On receiving updated text from another client
+// When receiving updated text from another client
 socket.on('codeChange', (fullText) => {
   const currentText = editor.getValue();
-  // Update the editor only if text differs to avoid unnecessary reflows
+
+  // Only update if the incoming text is different
   if (currentText !== fullText) {
+    // Save the cursor position
+    const cursor = editor.getCursor();
+
     applyingRemoteChange = true;
     editor.setValue(fullText);
+
+    // Restore the cursor position
+    editor.setCursor(cursor);
     applyingRemoteChange = false;
   }
 });
+
+// Make the editor globally accessible for other scripts
+window.editor = editor;
