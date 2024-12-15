@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Real-time Code Sharing</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5/lib/codemirror.css" />
+  <style>
+    body { margin:0; font-family:sans-serif; }
+    h1 { padding:10px; margin:0; background:#222; color:#fff; }
+    .editor-container { height: calc(100vh - 50px); }
+    .CodeMirror { height:100%; border:1px solid #ddd; font-size:14px; }
+  </style>
+</head>
+<body>
+  <h1>Real-time Code Sharing</h1>
+  <div class="editor-container">
+    <textarea id="editor"></textarea>
+  </div>
+  
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/codemirror@5/lib/codemirror.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/codemirror@5/mode/javascript/javascript.js"></script>
+  <script src="client.js"></script>
+</body>
+</html>
