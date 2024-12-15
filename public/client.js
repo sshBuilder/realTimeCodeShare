@@ -1,11 +1,13 @@
-// Extract roomId from URL path
-// URL format: https://your-app.onrender.com/code/roomId
-const pathParts = window.location.pathname.split('/');
-const roomId = pathParts[pathParts.length - 1] || 'default-room'; // fallback if needed
-
 const socket = io();
 
-// Join the specific room
+// Extract the entire path (excluding leading '/')
+let roomId = window.location.pathname.slice(1);
+// If no sub-path, use a default room name
+if (!roomId) {
+  roomId = 'default-room';
+}
+
+// Join the determined room
 socket.emit('joinRoom', roomId);
 
 // Initialize CodeMirror editor
@@ -18,11 +20,13 @@ let applyingRemoteChange = false;
 
 editor.on('change', (instance, changeObj) => {
   if (applyingRemoteChange) return;
+  
   const delta = {
     text: changeObj.text,
     from: changeObj.from,
     to: changeObj.to
   };
+  
   socket.emit('codeChange', { roomId, delta });
 });
 
