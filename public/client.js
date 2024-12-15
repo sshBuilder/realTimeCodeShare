@@ -12,9 +12,10 @@ socket.emit('joinRoom', roomId);
 
 // Initialize CodeMirror editor
 const editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
-  lineNumbers: true,
-  mode: 'javascript'
-});
+    lineNumbers: true,
+    mode: 'javascript',
+    theme: 'material'
+  });  
 
 let applyingRemoteChange = false;
 
